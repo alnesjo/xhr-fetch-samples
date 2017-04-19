@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<pre></pre>
+<script>
+    "use strict";
+    let pre = document.querySelector("pre"),
+        xhr = new XMLHttpRequest(),
+        t = 0;
+    xhr.open("GET", "https://jigsaw.w3.org/HTTP/ChunkedScript", true);
+    xhr.onprogress = function () {
+        let chunk = xhr.responseText.substring(t);
+        console.log(chunk.length);
+        pre.insertAdjacentText("beforeend",chunk);
+        t = xhr.responseText.length;
+    };
+    xhr.send();
+</script>
+</body>
+</html>
