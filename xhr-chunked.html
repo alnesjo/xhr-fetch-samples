@@ -5,18 +5,18 @@
     <title>Title</title>
 </head>
 <body>
-<pre></pre>
+<img src=""></img>
 <script>
     "use strict";
-    let pre = document.querySelector("pre"),
+    let img = document.querySelector('img'),
         xhr = new XMLHttpRequest(),
         t = 0;
-    xhr.open("GET", "https://jigsaw.w3.org/HTTP/ChunkedScript", true);
-    xhr.onprogress = function () {
-        let chunk = xhr.responseText.substring(t);
-        console.log(chunk.length);
-        pre.insertAdjacentText("beforeend",chunk);
-        t = xhr.responseText.length;
+    xhr.open('GET', 'http://localhost:8080', true);
+    xhr.responseType = 'arraybuffer';
+    xhr.onprogress = () => {
+        console.log(NaN.toString(), "bytes delivered");
+        let blob = new Blob([xhr.response], {type: "image/jpeg"});
+        img.src = URL.createObjectURL(blob);
     };
     xhr.send();
 </script>

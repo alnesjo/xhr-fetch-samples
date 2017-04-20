@@ -5,27 +5,34 @@
     <title>Fetch flowers</title>
 </head>
 <body>
-<pre></pre>
+<img src=""></img>
 <script>
     "use strict";
-    let pre = document.querySelector("pre");
-    fetch("https://jigsaw.w3.org/HTTP/ChunkedScript")
-        .then(response => {
-            return (function readChunk(reader, decoder) {
-                return reader.read()
-                    .then(function (result) {
-                        let chunk = decoder.decode(result.value || new Uint8Array, {stream: !result.done});
-                        console.log(chunk.length);
-                        pre.insertAdjacentText("beforeend",chunk);
-                        if (!result.done) {
-                            return readChunk(reader, decoder);
-                        }
-                    });
-            })(response.body.getReader(), new TextDecoder());
+    let img = document.querySelector("img");
+    fetch("http://localhost:8080").then(response => {
+        return response.body.getReader();
+    }).then(reader => {
+        let data = new Uint8Array();
+        return reader.read().then(function process(result) {
+            if (result.done) {
+                console.log(data.length, 'bytes total');
+                return new Blob([data], {type: 'image/jpeg'});
+            }
+            let chunk = result.value;
+            console.log(chunk.length.toString(), '"bytes delivered');
+            data = ((a, b) => {
+                let c = (new Int8Array(a.length + b.length));
+                c.set(a);
+                c.set(b, a.length);
+                return c;
+            })(data, chunk);
+            return reader.read().then(process);
         })
-        .catch(function (err) {
-            console.error(err);
-        });
+    }).then(blob => {
+        img.src = URL.createObjectURL(blob);
+    }).catch(e => {
+        console.error(e);
+    });
 </script>
 </body>
 </html>
